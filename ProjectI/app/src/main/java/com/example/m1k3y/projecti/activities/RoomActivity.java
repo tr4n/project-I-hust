@@ -1,5 +1,7 @@
 package com.example.m1k3y.projecti.activities;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.m1k3y.projecti.R;
+import com.example.m1k3y.projecti.services.ReminderService;
 import com.example.m1k3y.projecti.adapters.CustomLayoutManager;
 import com.example.m1k3y.projecti.adapters.MessageAdapter;
 import com.example.m1k3y.projecti.models.MessageModel;
@@ -33,6 +36,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
@@ -82,6 +86,7 @@ public class RoomActivity extends AppCompatActivity {
     }
 
     private void setupUI() {
+        pushNotification();
         etTypingMessage.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -101,6 +106,8 @@ public class RoomActivity extends AppCompatActivity {
                 messageModelList.add(messageModel);
                 messageAdapter.notifyItemInserted(messageModelList.size() - 1);
                 customLayoutManager.setTargetStartPos(messageModelList.size() - 1, 0);
+
+
             }
 
             @Override
@@ -125,6 +132,29 @@ public class RoomActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    private void pushNotification() {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Intent intent = new Intent(this, ReminderService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(
+                this,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(Utils.ALARM_TIME.substring(0, 2)));
+        calendar.set(Calendar.MINUTE, Integer.parseInt(Utils.ALARM_TIME.substring(3, 5)));
+
+
+        alarmManager.setRepeating(
+                AlarmManager.RTC_WAKEUP,
+                Calendar.getInstance().getTimeInMillis(),
+                AlarmManager.INTERVAL_DAY,
+                pendingIntent
+        );
     }
 
     private void displayMessagesFirst() {

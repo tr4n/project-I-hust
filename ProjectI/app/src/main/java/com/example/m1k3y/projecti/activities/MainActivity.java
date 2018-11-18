@@ -2,6 +2,7 @@ package com.example.m1k3y.projecti.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.tv_username)
     TextView tvUsername;
     private boolean isSignedIn = false;
-    private PassingDataModel passingDataModel;
+
     @BindView(R.id.sign_in_button)
     SignInButton signInButton;
 
@@ -59,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportActionBar().hide();
         ButterKnife.bind(this);
+
+
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -105,11 +108,12 @@ public class MainActivity extends AppCompatActivity {
     private void updateUI(GoogleSignInAccount account) {
         if (account == null) {
             tvUsername.setText("Anynomous");
-            ivProfile.setImageResource(R.drawable.avatar);
+            Picasso.get().load(Utils.getProfilePhotoUrl(null)).into(ivProfile);
             isSignedIn = false;
 
         } else {
             isSignedIn = true;
+
             Picasso.get().load(Utils.getProfilePhotoUrl(account.getPhotoUrl())).into(ivProfile);
 
             tvUsername.setText(account.getDisplayName());
@@ -117,13 +121,7 @@ public class MainActivity extends AppCompatActivity {
             tvUsername.setText(username);
             Toast.makeText(MainActivity.this, "logined Successfully with" + account.getDisplayName(), Toast.LENGTH_SHORT).show();
 
-            passingDataModel = new PassingDataModel(
-                    username,
-                    account.getId(),
-                    Utils.getProfilePhotoUrl(account.getPhotoUrl()),
-                    ivProfile.getDrawable()
 
-            );
         }
 
     }
@@ -134,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         updateUI(null);
-                        Toast.makeText(MainActivity.this, "Sign out successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Signed out", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -152,12 +150,23 @@ public class MainActivity extends AppCompatActivity {
                 signOut();
                 break;
             case R.id.bt_enter_room:
-                if (!isSignedIn) break;
-                String username = tvUsername.getText().toString().length() < 1 ? "Anynomous" : tvUsername.getText().toString();
-                passingDataModel.setUsername(username);
-                tvUsername.setText(username);
+                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+                if (!isSignedIn || account == null) {
+                    Toast.makeText(MainActivity.this, "Please sign in with an account", Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
+
+                PassingDataModel passingDataModel = new PassingDataModel(
+                        account.getDisplayName(),
+                        account.getId(),
+                        Utils.getProfilePhotoUrl(account.getPhotoUrl()),
+                        ivProfile.getDrawable()
+                );
+
+
                 Intent intent = new Intent(MainActivity.this, RoomActivity.class);
-                intent.putExtra("passing_data_model", passingDataModel);
+                intent.putExtra("passing_data_model", (Parcelable) passingDataModel);
                 startActivity(intent);
                 break;
         }
