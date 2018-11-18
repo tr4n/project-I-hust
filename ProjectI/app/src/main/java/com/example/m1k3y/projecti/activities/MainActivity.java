@@ -8,12 +8,13 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.m1k3y.projecti.R;
 import com.example.m1k3y.projecti.models.PassingDataModel;
+import com.example.m1k3y.projecti.utils.Utils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -32,12 +33,13 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 1;
     private static final String TAG = "MainActivity";
-    private boolean isSignedIn= false;
+    @BindView(R.id.tv_username)
+    TextView tvUsername;
+    private boolean isSignedIn = false;
     private PassingDataModel passingDataModel;
     @BindView(R.id.sign_in_button)
     SignInButton signInButton;
-    @BindView(R.id.et_username)
-    EditText etUsername;
+
 
     GoogleSignInClient googleSignInClient;
     @BindView(R.id.iv_profile)
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 //Remove notification bar
-       // getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        // getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
         getSupportActionBar().hide();
@@ -102,23 +104,24 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUI(GoogleSignInAccount account) {
         if (account == null) {
-            etUsername.setText("Anynomous");
+            tvUsername.setText("Anynomous");
             ivProfile.setImageResource(R.drawable.avatar);
             isSignedIn = false;
 
         } else {
             isSignedIn = true;
-            Picasso.get().load(account.getPhotoUrl()).into(ivProfile);
+            Picasso.get().load(Utils.getProfilePhotoUrl(account.getPhotoUrl())).into(ivProfile);
 
-            etUsername.setText(account.getDisplayName());
-            String username = etUsername.getText().toString().length() < 1 ? "Anynomous" : etUsername.getText().toString();
-            etUsername.setText(username);
+            tvUsername.setText(account.getDisplayName());
+            String username = tvUsername.getText().toString().length() < 1 ? "Anynomous" : tvUsername.getText().toString();
+            tvUsername.setText(username);
             Toast.makeText(MainActivity.this, "logined Successfully with" + account.getDisplayName(), Toast.LENGTH_SHORT).show();
+
             passingDataModel = new PassingDataModel(
-              username,
-              account.getId(),
-              account.getPhotoUrl().toString(),
-              ivProfile.getDrawable()
+                    username,
+                    account.getId(),
+                    Utils.getProfilePhotoUrl(account.getPhotoUrl()),
+                    ivProfile.getDrawable()
 
             );
         }
@@ -149,12 +152,12 @@ public class MainActivity extends AppCompatActivity {
                 signOut();
                 break;
             case R.id.bt_enter_room:
-                if(!isSignedIn) break;
-                String username = etUsername.getText().toString().length() < 1 ? "Anynomous" : etUsername.getText().toString();
+                if (!isSignedIn) break;
+                String username = tvUsername.getText().toString().length() < 1 ? "Anynomous" : tvUsername.getText().toString();
                 passingDataModel.setUsername(username);
-                etUsername.setText(username);
+                tvUsername.setText(username);
                 Intent intent = new Intent(MainActivity.this, RoomActivity.class);
-                intent.putExtra("passing_data_model",passingDataModel);
+                intent.putExtra("passing_data_model", passingDataModel);
                 startActivity(intent);
                 break;
         }

@@ -70,12 +70,12 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
         public void setData(List<MessageModel> messageModelList, int position) {
             MessageModel messageModel = messageModelList.get(position);
-            ivProfileLeft.setImageDrawable(messageModel.getDrawable());
+            Picasso.get().load(messageModel.getProfilePhotoUrl()).into(ivProfileLeft);
             tvLeftTime.setText(messageModel.getTime());
             tvLeftContent.setText(messageModel.getContent());
             tvLeftUsername.setText(messageModel.getUsername());
 
-            if(messageModel.getDrawable() == null) {
+            if(ivProfileLeft.getDrawable() == null) {
                 ivProfileLeft.setImageResource(R.drawable.avatar);
 
             }
@@ -90,5 +90,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
 
 
+    }
+
+    private class MessageHolder extends RecyclerView.ViewHolder{
+
+        public MessageHolder(View itemView) {
+
+            super(itemView);
+        }
     }
 }

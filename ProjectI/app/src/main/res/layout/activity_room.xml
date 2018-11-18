@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#f2f2f2"
     tools:context=".activities.RoomActivity">
 
     <android.support.constraint.ConstraintLayout
@@ -38,12 +39,12 @@
             android:textColor="#fff"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/iv_collapse"
+            app:layout_constraintEnd_toStartOf="@+id/iv_auto_new"
             app:layout_constraintStart_toEndOf="@+id/iv_back"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/iv_collapse"
+            android:id="@+id/iv_auto_new"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -53,7 +54,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_stars_white_24dp"
+            app:srcCompat="@drawable/ic_autorenew_white_24dp"
             tools:ignore="VectorDrawableCompat" />
 
     </android.support.constraint.ConstraintLayout>
@@ -62,7 +63,9 @@
         android:id="@+id/cl_chating_message"
         android:layout_width="0dp"
         android:elevation="8dp"
-        android:layout_height="50dp"
+        android:background="#fff"
+
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -82,27 +85,32 @@
             tools:ignore="VectorDrawableCompat" />
 
         <EditText
+            android:focusableInTouchMode="false"
             android:id="@+id/et_typing_message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name"
+            android:textSize="12sp"
+
+            android:maxLines="4"
+            android:inputType="textCapSentences|textMultiLine"
+            android:imeOptions="flagNoEnterAction"
+            android:hint="chat here"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/iv_send"
-            app:layout_constraintStart_toEndOf="@+id/iv_more"
+            app:layout_constraintStart_toEndOf="@+id/iv_avatar"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/iv_more"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/iv_avatar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginStart="8dp"
             android:padding="8dp"
+            android:src="@drawable/hust"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_add_circle_24dp"
             tools:ignore="VectorDrawableCompat" />
     </android.support.constraint.ConstraintLayout>
 
@@ -110,6 +118,7 @@
         android:id="@+id/rv_messages"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginBottom="50dp"
         app:layout_constraintBottom_toTopOf="@+id/cl_chating_message"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

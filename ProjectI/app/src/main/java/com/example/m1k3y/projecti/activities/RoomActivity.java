@@ -1,21 +1,36 @@
 package com.example.m1k3y.projecti.activities;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.m1k3y.projecti.R;
+import com.example.m1k3y.projecti.adapters.CustomLayoutManager;
 import com.example.m1k3y.projecti.adapters.MessageAdapter;
 import com.example.m1k3y.projecti.models.MessageModel;
 import com.example.m1k3y.projecti.models.PassingDataModel;
+import com.example.m1k3y.projecti.utils.Utils;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,21 +45,26 @@ public class RoomActivity extends AppCompatActivity {
     ImageView ivBack;
     @BindView(R.id.tv_time)
     TextView tvTime;
-    @BindView(R.id.iv_collapse)
-    ImageView ivCollapse;
+    @BindView(R.id.iv_auto_new)
+    ImageView ivAutoNew;
     @BindView(R.id.iv_send)
     ImageView ivSend;
     @BindView(R.id.et_typing_message)
     EditText etTypingMessage;
-    @BindView(R.id.iv_more)
-    ImageView ivMore;
+
     @BindView(R.id.rv_messages)
     RecyclerView rvMessages;
+    @BindView(R.id.iv_avatar)
+    ImageView ivAvatar;
 
     private List<MessageModel> messageModelList = new ArrayList<>();
     private PassingDataModel passingDataModel;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
+    private MessageAdapter messageAdapter;
+    private CustomLayoutManager customLayoutManager;
+    private FirebaseRecyclerAdapter firebaseRecyclerAdapter;
+    private static final String TAG = "RoomActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,59 +74,154 @@ public class RoomActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         getSupportActionBar().hide();
 
-        setupDatabase();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("message_list");
+
         Initialization();
         setupUI();
     }
 
     private void setupUI() {
+        etTypingMessage.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_FLAG_NO_ENTER_ACTION) {
+                    sendMessage();
+                    return true;
+                }
+                return false;
+            }
+        });
 
+        displayMessagesFirst();
+        databaseReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                MessageModel messageModel = dataSnapshot.getValue(MessageModel.class);
+                messageModelList.add(messageModel);
+                messageAdapter.notifyItemInserted(messageModelList.size() - 1);
+                customLayoutManager.setTargetStartPos(messageModelList.size() - 1, 0);
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+    private void displayMessagesFirst() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                messageModelList = new ArrayList<>();
+                //iterate through each user, ignoring their UID
+                for (DataSnapshot messageSnapShot : dataSnapshot.getChildren()) {
+                    MessageModel messageModel = messageSnapShot.getValue(MessageModel.class);
+                    //  String content = dataSnapshot.getValue("content");
+
+                    Log.d(TAG, "collectDatas: " + messageModel);
+                    messageModelList.add(messageModel);
+
+                }
+
+
+                messageAdapter = new MessageAdapter(messageModelList, RoomActivity.this);
+                rvMessages.setAdapter(messageAdapter);
+                customLayoutManager.setTargetStartPos(messageModelList.size() - 1, 0);
+                rvMessages.setLayoutManager(customLayoutManager);
+                // rvMessages.smoothScrollToPosition(messageModelList.size());
+                Log.d(TAG, "onDataChange: " + dataSnapshot.getValue());
+
+
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+
+    private void sendMessage() {
+        updateFirebaseDatabase(passingDataModel.getUsername(), etTypingMessage.getText().toString(), passingDataModel.getProfilePhotoUrl());
+
+
+        etTypingMessage.setText("");
+        etTypingMessage.clearFocus();
+
+        InputMethodManager inputManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     private void Initialization() {
 
+
         passingDataModel = (PassingDataModel) getIntent().getSerializableExtra("passing_data_model");
-
+        Picasso.get().load(passingDataModel.getProfilePhotoUrl()).into(ivAvatar);
         messageModelList = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            messageModelList.add(new MessageModel(
-                    i + "time ",
-                    passingDataModel.getUsername(),
-                    passingDataModel.getAccountId(),
-                    passingDataModel.getProfileDrawable()
-            ));
+        messageAdapter = new MessageAdapter(messageModelList, this);
+        customLayoutManager = new CustomLayoutManager(this, 1);
 
-        }
-
-        MessageAdapter messageAdapter = new MessageAdapter(messageModelList, this);
-        rvMessages.setLayoutManager(new GridLayoutManager(this, 1));
+        rvMessages.setLayoutManager(customLayoutManager);
         rvMessages.setAdapter(messageAdapter);
-    }
-
-    private void setupDatabase() {
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        firebaseDatabase.setPersistenceEnabled(true);
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-
-        databaseReference.
 
 
     }
 
-    @OnClick({R.id.iv_back, R.id.iv_collapse, R.id.iv_send, R.id.iv_more})
+    private void updateFirebaseDatabase(String name, String content, String photoUrl) {
+        databaseReference.child(Utils.getTime()).setValue(
+                new MessageModel(
+                        Utils.getTime(),
+                        name,
+                        content,
+                        photoUrl
+
+                )
+        );
+
+    }
+
+
+    @OnClick({R.id.iv_back, R.id.iv_auto_new, R.id.iv_send, R.id.et_typing_message})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_back:
-                onBackPressed();
+                startActivity(new Intent(RoomActivity.this, MainActivity.class));
                 break;
-            case R.id.iv_collapse:
+            case R.id.iv_auto_new:
+                displayMessagesFirst();
                 break;
             case R.id.iv_send:
-
+                sendMessage();
+                ;
+                Log.d(TAG, "onViewClicked: " + messageModelList.size());
 
                 break;
-            case R.id.iv_more:
-                break;
+
+            case R.id.et_typing_message:
+                etTypingMessage.setFocusableInTouchMode(true);
+
         }
     }
 }
