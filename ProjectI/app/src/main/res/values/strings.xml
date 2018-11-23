@@ -1,4 +1,7 @@
 <resources>
-    <string name="app_name">ProjectI</string>
+    <string name="app_name">Project-I</string>
     <string name="avatar"></string>
+    <string name="default_notification_channel_id">VIT Room Chat</string>
+    <string name="default_notification_channel_title">VIT Room Chat</string>
+    <string name="content_text">Tap to enter the room</string>
 </resources>

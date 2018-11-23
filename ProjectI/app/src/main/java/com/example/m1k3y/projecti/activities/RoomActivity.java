@@ -1,6 +1,5 @@
 package com.example.m1k3y.projecti.activities;
 
-import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.m1k3y.projecti.R;
-import com.example.m1k3y.projecti.services.ReminderService;
+import com.example.m1k3y.projecti.services.NotificationService;
 import com.example.m1k3y.projecti.adapters.CustomLayoutManager;
 import com.example.m1k3y.projecti.adapters.MessageAdapter;
 import com.example.m1k3y.projecti.models.MessageModel;
@@ -36,7 +35,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
@@ -85,8 +83,24 @@ public class RoomActivity extends AppCompatActivity {
         setupUI();
     }
 
+    private void Initialization() {
+
+
+        passingDataModel = (PassingDataModel) getIntent().getSerializableExtra("passing_data_model");
+        Picasso.get().load(passingDataModel.getProfilePhotoUrl()).into(ivAvatar);
+        messageModelList = new ArrayList<>();
+        messageAdapter = new MessageAdapter(messageModelList, this);
+        customLayoutManager = new CustomLayoutManager(this, 1);
+
+        rvMessages.setLayoutManager(customLayoutManager);
+        rvMessages.setAdapter(messageAdapter);
+        pushNotification(passingDataModel.getUsername());
+
+
+    }
+
     private void setupUI() {
-        pushNotification();
+        //pushNotification();
         etTypingMessage.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -108,6 +122,7 @@ public class RoomActivity extends AppCompatActivity {
                 customLayoutManager.setTargetStartPos(messageModelList.size() - 1, 0);
 
 
+
             }
 
             @Override
@@ -117,7 +132,7 @@ public class RoomActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
+                displayMessagesFirst();
             }
 
             @Override
@@ -134,9 +149,11 @@ public class RoomActivity extends AppCompatActivity {
 
     }
 
-    private void pushNotification() {
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        Intent intent = new Intent(this, ReminderService.class);
+    private void pushNotification(String displayName) {
+
+        Intent intent = new Intent(this, NotificationService.class);
+        intent.putExtra("display_name", passingDataModel.getUsername());
+
         PendingIntent pendingIntent = PendingIntent.getService(
                 this,
                 0,
@@ -144,17 +161,7 @@ public class RoomActivity extends AppCompatActivity {
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(Utils.ALARM_TIME.substring(0, 2)));
-        calendar.set(Calendar.MINUTE, Integer.parseInt(Utils.ALARM_TIME.substring(3, 5)));
-
-
-        alarmManager.setRepeating(
-                AlarmManager.RTC_WAKEUP,
-                Calendar.getInstance().getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY,
-                pendingIntent
-        );
+       startService(intent);
     }
 
     private void displayMessagesFirst() {
@@ -194,7 +201,10 @@ public class RoomActivity extends AppCompatActivity {
 
 
     private void sendMessage() {
-        updateFirebaseDatabase(passingDataModel.getUsername(), etTypingMessage.getText().toString(), passingDataModel.getProfilePhotoUrl());
+        if(etTypingMessage.getText().toString().trim().length() < 1){
+            return;
+        }
+        updateFirebaseDatabase(passingDataModel.getUsername(), etTypingMessage.getText().toString().trim(), passingDataModel.getProfilePhotoUrl());
 
 
         etTypingMessage.setText("");
@@ -204,20 +214,7 @@ public class RoomActivity extends AppCompatActivity {
         inputManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
-    private void Initialization() {
 
-
-        passingDataModel = (PassingDataModel) getIntent().getSerializableExtra("passing_data_model");
-        Picasso.get().load(passingDataModel.getProfilePhotoUrl()).into(ivAvatar);
-        messageModelList = new ArrayList<>();
-        messageAdapter = new MessageAdapter(messageModelList, this);
-        customLayoutManager = new CustomLayoutManager(this, 1);
-
-        rvMessages.setLayoutManager(customLayoutManager);
-        rvMessages.setAdapter(messageAdapter);
-
-
-    }
 
     private void updateFirebaseDatabase(String name, String content, String photoUrl) {
         databaseReference.child(Utils.getTime()).setValue(

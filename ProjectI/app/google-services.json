@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "368696272180-b5mngniv9a0virs19qqr399esfrj796e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.m1k3y.projecti",
+            "certificate_hash": "e29a398cc55f1cd1e0fa90ca686d65876d444a40"
+          }
+        },
+        {
           "client_id": "368696272180-g880mh3hjl40mua8qad3u5i9kemmc58r.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -40,7 +48,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "368696272180-g880mh3hjl40mua8qad3u5i9kemmc58r.apps.googleusercontent.com",
+              "client_id": "368696272180-ivpj1log1i1ikrqaggfja3jatmsl6vo0.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
