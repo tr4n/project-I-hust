@@ -59,6 +59,7 @@ public class RoomActivity extends AppCompatActivity {
     @BindView(R.id.iv_avatar)
     ImageView ivAvatar;
 
+
     private List<MessageModel> messageModelList = new ArrayList<>();
     private PassingDataModel passingDataModel;
     private FirebaseDatabase firebaseDatabase;
@@ -121,6 +122,10 @@ public class RoomActivity extends AppCompatActivity {
                 messageAdapter.notifyItemInserted(messageModelList.size() - 1);
                 customLayoutManager.setTargetStartPos(messageModelList.size() - 1, 0);
 
+                String name = messageModel.username;
+                String content = messageModel.content;
+                String time = messageModel.time;
+
 
 
             }
@@ -152,7 +157,7 @@ public class RoomActivity extends AppCompatActivity {
     private void pushNotification(String displayName) {
 
         Intent intent = new Intent(this, NotificationService.class);
-        intent.putExtra("display_name", passingDataModel.getUsername());
+        intent.putExtra("display_name", displayName);
 
         PendingIntent pendingIntent = PendingIntent.getService(
                 this,
@@ -234,7 +239,7 @@ public class RoomActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_back:
-                startActivity(new Intent(RoomActivity.this, MainActivity.class));
+                startActivity(new Intent(RoomActivity.this, SignInActivity.class));
                 break;
             case R.id.iv_auto_new:
                 displayMessagesFirst();

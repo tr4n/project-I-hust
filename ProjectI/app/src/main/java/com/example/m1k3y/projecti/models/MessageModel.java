@@ -1,6 +1,11 @@
 package com.example.m1k3y.projecti.models;
 
-public class MessageModel {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
+public class MessageModel implements Parcelable, Serializable {
     public  String time;
     public String username;
     public String content;
@@ -16,6 +21,25 @@ public class MessageModel {
     public MessageModel() {
     }
 
+
+    protected MessageModel(Parcel in) {
+        time = in.readString();
+        username = in.readString();
+        content = in.readString();
+        profilePhotoUrl = in.readString();
+    }
+
+    public static final Creator<MessageModel> CREATOR = new Creator<MessageModel>() {
+        @Override
+        public MessageModel createFromParcel(Parcel in) {
+            return new MessageModel(in);
+        }
+
+        @Override
+        public MessageModel[] newArray(int size) {
+            return new MessageModel[size];
+        }
+    };
 
     public String getTime() {
         return time;
@@ -57,5 +81,18 @@ public class MessageModel {
                 ", content='" + content + '\'' +
                 ", profilePhotoUrl='" + profilePhotoUrl + '\'' +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(time);
+        parcel.writeString(username);
+        parcel.writeString(content);
+        parcel.writeString(profilePhotoUrl);
     }
 }

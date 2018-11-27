@@ -2,10 +2,8 @@ package com.example.m1k3y.projecti.utils;
 
 import android.net.Uri;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 public class Utils {
     public static final int DISPLAY_TIME = 0;
@@ -25,7 +23,15 @@ public class Utils {
                 .format(Calendar.getInstance().getTime())
                 .toUpperCase();
 
+    }
 
+    public static String getWish(String name ){
+        int currentHourIn24Format = Calendar.getInstance().get(Calendar.HOUR_OF_DAY); // return the hour in 24 hrs format (ranging from 0-23)
+
+        return currentHourIn24Format < 6 ? ("Have a new day, " + name)
+                : currentHourIn24Format < 12 ? ("Good morning, " + name)
+                : currentHourIn24Format < 18 ? ("Good afternoon, " + name)
+                : ("Good evening, " + name);
     }
 
 

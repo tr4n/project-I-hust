@@ -30,10 +30,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MainActivity extends AppCompatActivity {
+public class SignInActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 1;
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "SignInActivity";
     @BindView(R.id.tv_username)
     TextView tvUsername;
     private boolean isSignedIn = false;
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 //Remove notification bar
         // getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_sign_in);
 
         getSupportActionBar().hide();
         ButterKnife.bind(this);
@@ -66,12 +66,7 @@ public class MainActivity extends AppCompatActivity {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
-        /*
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(M.this.getResources().getString(R.string.server_client_id))
-                .requestEmail()ainActivity
-                .build();
-        */
+
         googleSignInClient = GoogleSignIn.getClient(this, gso);
 
 
@@ -125,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
             tvUsername.setText(account.getDisplayName());
             String username = tvUsername.getText().toString().length() < 1 ? "Anynomous" : tvUsername.getText().toString();
             tvUsername.setText(username);
-            Toast.makeText(MainActivity.this, "logined Successfully with" + account.getDisplayName(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignInActivity.this, "logined Successfully with" + account.getDisplayName(), Toast.LENGTH_SHORT).show();
 
 
         }
@@ -138,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         updateUI(null);
-                        Toast.makeText(MainActivity.this, "Signed out", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignInActivity.this, "Signed out", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -158,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.bt_enter_room:
                 GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
                 if (!isSignedIn || account == null) {
-                    Toast.makeText(MainActivity.this, "Please sign in with an account", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignInActivity.this, "Please sign in with an account", Toast.LENGTH_SHORT).show();
                     break;
                 }
 
@@ -171,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                 );
 
 
-                Intent intent = new Intent(MainActivity.this, RoomActivity.class);
+                Intent intent = new Intent(SignInActivity.this, RoomActivity.class);
                 intent.putExtra("passing_data_model", (Parcelable) passingDataModel);
                 startActivity(intent);
                 break;
