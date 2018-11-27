@@ -19,11 +19,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.m1k3y.projecti.R;
-import com.example.m1k3y.projecti.services.NotificationService;
 import com.example.m1k3y.projecti.adapters.CustomLayoutManager;
 import com.example.m1k3y.projecti.adapters.MessageAdapter;
 import com.example.m1k3y.projecti.models.MessageModel;
 import com.example.m1k3y.projecti.models.PassingDataModel;
+import com.example.m1k3y.projecti.services.NotificationService;
 import com.example.m1k3y.projecti.utils.Utils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.ChildEventListener;
@@ -102,15 +102,21 @@ public class RoomActivity extends AppCompatActivity {
 
     private void setupUI() {
         //pushNotification();
+        // getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+
         etTypingMessage.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_FLAG_NO_ENTER_ACTION) {
-                    sendMessage();
+                    //   sendMessage();
+
                     return true;
                 }
                 return false;
             }
+
+
         });
 
         displayMessagesFirst();
@@ -125,7 +131,6 @@ public class RoomActivity extends AppCompatActivity {
                 String name = messageModel.username;
                 String content = messageModel.content;
                 String time = messageModel.time;
-
 
 
             }
@@ -166,7 +171,7 @@ public class RoomActivity extends AppCompatActivity {
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
-       startService(intent);
+        startService(intent);
     }
 
     private void displayMessagesFirst() {
@@ -206,7 +211,7 @@ public class RoomActivity extends AppCompatActivity {
 
 
     private void sendMessage() {
-        if(etTypingMessage.getText().toString().trim().length() < 1){
+        if (etTypingMessage.getText().toString().trim().length() < 1) {
             return;
         }
         updateFirebaseDatabase(passingDataModel.getUsername(), etTypingMessage.getText().toString().trim(), passingDataModel.getProfilePhotoUrl());
@@ -218,7 +223,6 @@ public class RoomActivity extends AppCompatActivity {
         InputMethodManager inputManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
         inputManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
-
 
 
     private void updateFirebaseDatabase(String name, String content, String photoUrl) {
@@ -253,6 +257,10 @@ public class RoomActivity extends AppCompatActivity {
 
             case R.id.et_typing_message:
                 etTypingMessage.setFocusableInTouchMode(true);
+                etTypingMessage.setHint("Type a message...");
+
+
+                break;
 
         }
     }

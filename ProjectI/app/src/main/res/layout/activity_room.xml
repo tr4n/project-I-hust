@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f2f2f2"
+    android:background="#dee6ef"
     tools:context=".activities.RoomActivity">
 
     <android.support.constraint.ConstraintLayout
@@ -84,6 +84,7 @@
             app:srcCompat="@drawable/ic_send_24dp"
             tools:ignore="VectorDrawableCompat" />
 
+
         <EditText
             android:focusableInTouchMode="false"
             android:id="@+id/et_typing_message"
@@ -95,7 +96,7 @@
             android:maxLines="4"
             android:inputType="textCapSentences|textMultiLine"
             android:imeOptions="flagNoEnterAction"
-            android:hint="chat here"
+            android:hint="Double tap to start chat"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/iv_send"
             app:layout_constraintStart_toEndOf="@+id/iv_avatar"
@@ -118,7 +119,7 @@
         android:id="@+id/rv_messages"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="24dp"
         app:layout_constraintBottom_toTopOf="@+id/cl_chating_message"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
