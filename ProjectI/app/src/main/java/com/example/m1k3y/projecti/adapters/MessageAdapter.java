@@ -84,7 +84,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context, Utils.getDisplayTime(messageModel.getTime()) , Toast.LENGTH_SHORT).show();
+                    Utils.getStringClipboard(context,messageModel.getTime(),  messageModel.getContent());
+                    Toast.makeText(context, "Message: \"" + messageModel.getContent() + "\" \n is copied to clipboard", Toast.LENGTH_SHORT).show();
                 }
             });
         }

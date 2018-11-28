@@ -1,5 +1,8 @@
 package com.example.m1k3y.projecti.utils;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.net.Uri;
 
 import java.text.SimpleDateFormat;
@@ -45,6 +48,14 @@ public class Utils {
                 : currentHourIn24Format < 12 ? ("Good morning, " + name)
                 : currentHourIn24Format < 18 ? ("Good afternoon, " + name)
                 : ("Good evening, " + name);
+    }
+
+    public static ClipData getStringClipboard(Context context, String label, String text){
+
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(label, text);
+        clipboard.setPrimaryClip(clip);
+        return clip;
     }
 
 
