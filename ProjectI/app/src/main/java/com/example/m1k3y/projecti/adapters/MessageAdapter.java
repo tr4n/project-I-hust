@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.example.m1k3y.projecti.R;
 import com.example.m1k3y.projecti.models.MessageModel;
+import com.example.m1k3y.projecti.utils.Utils;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -69,9 +70,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         }
 
         public void setData(List<MessageModel> messageModelList, int position) {
-            MessageModel messageModel = messageModelList.get(position);
+            final MessageModel messageModel = messageModelList.get(position);
             Picasso.get().load(messageModel.getProfilePhotoUrl()).into(ivProfileLeft);
-            tvLeftTime.setText(messageModel.getTime());
+            tvLeftTime.setText(Utils.getDisplayTime(messageModel.getTime()));
             tvLeftContent.setText(messageModel.getContent());
             tvLeftUsername.setText(messageModel.getUsername());
 
@@ -83,7 +84,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(context, "Clicked!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, Utils.getDisplayTime(messageModel.getTime()) , Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -92,11 +93,4 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     }
 
-    private class MessageHolder extends RecyclerView.ViewHolder{
-
-        public MessageHolder(View itemView) {
-
-            super(itemView);
-        }
-    }
 }

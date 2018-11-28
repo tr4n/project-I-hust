@@ -120,7 +120,7 @@ public class SignInActivity extends AppCompatActivity {
             tvUsername.setText(account.getDisplayName());
             String username = tvUsername.getText().toString().length() < 1 ? "Anynomous" : tvUsername.getText().toString();
             tvUsername.setText(username);
-            Toast.makeText(SignInActivity.this, "logined Successfully with" + account.getDisplayName(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignInActivity.this, getString(R.string.logging_in_notification) + " with " + account.getDisplayName(), Toast.LENGTH_SHORT).show();
 
 
         }
@@ -133,7 +133,7 @@ public class SignInActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         updateUI(null);
-                        Toast.makeText(SignInActivity.this, "Signed out", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SignInActivity.this, getString(R.string.logging_out_notification), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

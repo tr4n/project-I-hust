@@ -25,6 +25,19 @@ public class Utils {
 
     }
 
+    public static String getDisplayTime(String time){
+        String displayTime = "";
+        if(time == null ) return displayTime;
+        int index = 0;
+        for(String partTime : time.split(" ")){
+            if(index > 4) break;
+            displayTime += (partTime + " " );
+            index ++;
+        }
+        return displayTime;
+    }
+
+
     public static String getWish(String name ){
         int currentHourIn24Format = Calendar.getInstance().get(Calendar.HOUR_OF_DAY); // return the hour in 24 hrs format (ranging from 0-23)
 
