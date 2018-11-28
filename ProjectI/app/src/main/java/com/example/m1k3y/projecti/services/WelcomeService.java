@@ -13,10 +13,10 @@ import android.support.v4.app.NotificationCompat;
 
 import com.example.m1k3y.projecti.R;
 import com.example.m1k3y.projecti.activities.SignInActivity;
-import com.example.m1k3y.projecti.models.MessageModel;
+import com.example.m1k3y.projecti.utils.Utils;
 
-public class NotificationService extends Service {
-    public NotificationService() {
+public class WelcomeService extends Service {
+    public WelcomeService() {
     }
 
     @Override
@@ -28,19 +28,19 @@ public class NotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        MessageModel messageModel = intent.getExtras().getParcelable("message_model");
 
-        String title = messageModel.getUsername() + ": \"" + messageModel.getContent() + "\"";
-        createNotification( this, title);
+        String displayName = intent.getExtras().getString("display_name");
+        createNotification(Utils.getWish(displayName), this);
         return START_NOT_STICKY;
 
     }
 
     private NotificationManager notifManager;
-    public void createNotification(Context context, String title) {
+
+    public void createNotification(String aMessage, Context context) {
         final int NOTIFY_ID = 0; // ID of notification
         String id = context.getString(R.string.default_notification_channel_id); // default_channel_id
-
+        String title = context.getString(R.string.default_notification_channel_title); // Default Channel
         Intent intent;
         PendingIntent pendingIntent;
         NotificationCompat.Builder builder;
@@ -58,25 +58,29 @@ public class NotificationService extends Service {
             }
             builder = new NotificationCompat.Builder(context, id);
             intent = new Intent(context, SignInActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-            builder.setContentTitle(title)                            // required
+            builder.setContentTitle(aMessage)                            // required
                     .setSmallIcon(android.R.drawable.ic_popup_reminder)   // required
-                    .setContentText(context.getString(R.string.tapping)) // required
-                    .setDefaults(0)
+                    .setContentText(context.getString(R.string.content_text)) // required
+                    .setDefaults(Notification.DEFAULT_ALL)
+                    .setAutoCancel(true)
                     // .setVibrate(null)
                     .setContentIntent(pendingIntent)
-                    .setVibrate(new long[]{0L});
+                    .setTicker(aMessage)
+                    .setVibrate(new long[]{10L});
         } else {
             builder = new NotificationCompat.Builder(context, id);
             intent = new Intent(context, SignInActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-            builder.setContentTitle(title)                            // required
+            builder.setContentTitle(aMessage)                            // required
                     .setSmallIcon(android.R.drawable.ic_popup_reminder)   // required
-                    .setContentText(context.getString(R.string.tapping)) // required
-                    .setDefaults(0)
+                    .setContentText(context.getString(R.string.content_text)) // required
+                    .setDefaults(Notification.DEFAULT_ALL)
+                    .setAutoCancel(true)
                     .setContentIntent(pendingIntent)
+                    .setTicker(aMessage)
                     // .setVibrate(null)
                     .setVibrate(new long[]{0L})
                     .setPriority(Notification.PRIORITY_HIGH);
