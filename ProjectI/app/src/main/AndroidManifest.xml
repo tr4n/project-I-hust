@@ -27,10 +27,6 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".services.NotificationService"
-            android:enabled="true"
-            android:exported="true"></service>
     </application>
 
 </manifest>

@@ -4,7 +4,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -24,7 +23,6 @@ import com.example.m1k3y.projecti.adapters.CustomLayoutManager;
 import com.example.m1k3y.projecti.adapters.MessageAdapter;
 import com.example.m1k3y.projecti.models.MessageModel;
 import com.example.m1k3y.projecti.models.PassingDataModel;
-import com.example.m1k3y.projecti.services.NotificationService;
 import com.example.m1k3y.projecti.services.WelcomeService;
 import com.example.m1k3y.projecti.utils.Utils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -134,7 +132,7 @@ public class RoomActivity extends AppCompatActivity {
                 String content = messageModel.content;
                 String time = messageModel.time;
 
-                addNotification(messageModel);
+
             }
 
             @Override
@@ -176,12 +174,7 @@ public class RoomActivity extends AppCompatActivity {
         startService(intent);
     }
 
-    private void addNotification(MessageModel messageModel){
-        Intent intent = new Intent(this, NotificationService.class);
-        intent.putExtra("message_model", (Parcelable) messageModel);
-        startService(intent);
 
-    }
 
     private void displayMessagesFirst() {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
