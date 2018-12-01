@@ -53,7 +53,8 @@ public class NotificationService extends Service {
             if (mChannel == null) {
                 mChannel = new NotificationChannel(id, title, importance);
                 mChannel.enableVibration(true);
-                mChannel.setVibrationPattern(new long[]{0L});
+                mChannel.setVibrationPattern(new long[]{0L});"" +
+                        ""
                 notifManager.createNotificationChannel(mChannel);
             }
             builder = new NotificationCompat.Builder(context, id);
