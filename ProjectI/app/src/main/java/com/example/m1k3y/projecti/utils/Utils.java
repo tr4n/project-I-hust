@@ -28,6 +28,10 @@ public class Utils {
 
     }
 
+    public static String getCurrentTimeMilis(){
+        return "" + System.currentTimeMillis();
+    }
+
     public static String getDisplayTime(String time){
         String displayTime = "";
         if(time == null ) return displayTime;

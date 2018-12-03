@@ -228,7 +228,7 @@ public class RoomActivity extends AppCompatActivity {
 
 
     private void updateFirebaseDatabase(String name, String content, String photoUrl) {
-        databaseReference.child(Utils.getTime()).setValue(
+        databaseReference.child(Utils.getCurrentTimeMilis()).setValue(
                 new MessageModel(
                         Utils.getTime(),
                         name,
